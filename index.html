@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Puter.js Studio — Auth, Storage, Database & AI tanpa API Key</title>
+<meta name="description" content="Demo Puter.js: AI chat, cloud storage, NoSQL, hosting, auth & networking dalam satu script tag. Tanpa API key, tanpa server." />
+<script src="https://js.puter.com/v2/"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <div class="logo">P</div>
+      <div>
+        <div class="brand-name">Puter.js Studio</div>
+        <div class="brand-sub">Auth · Storage · DB · AI · Hosting</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="pill mono" id="auth-status">memeriksa sesi…</span>
+      <button class="btn btn-dark" id="btn-auth">Masuk</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- HERO -->
+  <section class="hero card">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> SATU &lt;SCRIPT&gt; · NOL KONFIGURASI</div>
+        <h1>Backend lengkap untuk aplikasi AI dalam satu tag script.</h1>
+        <p class="muted">Akses auth, cloud storage, database, hosting, dan 500+ model AI (Claude, GPT, Gemini) tanpa API key dan tanpa setup infrastruktur. Setiap user menanggung pemakaiannya sendiri — <strong>biaya developer Rp0</strong> dari 1 sampai 1 juta user.</p>
+        <div class="stats">
+          <div class="stat"><strong>500+</strong><span>model AI</span></div>
+          <div class="stat"><strong>$0</strong><span>biaya developer</span></div>
+          <div class="stat"><strong>1</strong><span>script tag</span></div>
+        </div>
+        <div class="code-row">
+          <code class="mono" id="script-tag">&lt;script src="https://js.puter.com/v2/"&gt;&lt;/script&gt;</code>
+          <button class="btn btn-light btn-sm" id="btn-copy-tag">Salin</button>
+        </div>
+        <div class="hero-links">
+          <a href="https://docs.puter.com/llms.txt" target="_blank" rel="noopener">Referensi llms.txt →</a>
+          <a href="https://github.com/HeyPuter/puter" target="_blank" rel="noopener">Puter (open-source OS) →</a>
+        </div>
+      </div>
+      <div class="browser" aria-hidden="true">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="addr mono">https://super-magical-website.com</span></div>
+        <div class="browser-body">
+          <div class="tag-cloud mono">
+            <span>OpenAI</span><span>Cloud Storage</span><span>Claude</span><span>Gemini</span><span>NoSQL</span>
+          </div>
+          <div class="browser-script mono">&lt;script src="<b>https://js.puter.com/v2/</b>"&gt;&lt;/script&gt;</div>
+          <div class="tag-cloud mono dim">
+            <span>Hosting API</span><span>Auth</span><span>OCR</span><span>Networking</span><span>TTS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <div class="layout">
+    <aside class="card side">
+      <div class="side-title">Modul</div>
+      <nav id="tabs" aria-label="Modul Puter.js">
+        <button class="tab active" data-tab="ai">AI Chat</button>
+        <button class="tab" data-tab="image">Text to Image</button>
+        <button class="tab" data-tab="fs">Cloud Storage</button>
+        <button class="tab" data-tab="kv">Database KV</button>
+        <button class="tab" data-tab="hosting">Hosting</button>
+        <button class="tab" data-tab="net">Networking</button>
+      </nav>
+      <div class="side-note">
+        <strong>User-pays model</strong>
+        <p class="muted small">Pemakaian cloud & AI ditanggung user masing-masing. Tidak ada kunci yang bocor di frontend.</p>
+      </div>
+    </aside>
+
+    <section class="panels">
+      <!-- AI -->
+      <article class="card panel active" id="panel-ai">
+        <div class="panel-head">
+          <div><h2>AI Chat</h2><p class="muted small">Chat dengan GPT, Claude, Gemini. Centang streaming untuk token-per-token.</p></div>
+          <label class="check"><input type="checkbox" id="ai-stream" checked /> Streaming</label>
+        </div>
+        <div class="row">
+          <select id="ai-model" class="input" aria-label="Model AI">
+            <option value="gpt-5.6-luna" selected>gpt-5.6-luna (OpenAI)</option>
+            <option value="claude-sonnet-4-5">claude-sonnet-4-5 (Anthropic)</option>
+            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Google)</option>
+            <option value="gpt-5-mini">gpt-5-mini</option>
+            <option value="llama-3.1-70b">llama-3.1-70b (Meta)</option>
+            <option value="mistral-large-latest">mistral-large-latest</option>
+          </select>
+          <input id="ai-image" class="input" placeholder="URL gambar opsional untuk vision (cth. https://assets.puter.site/doge.jpeg)" />
+        </div>
+        <div id="chat-log" class="chat" aria-live="polite">
+          <div class="msg assistant">Halo. Saya berjalan di atas <span class="mono">puter.ai.chat()</span> — tanpa API key. Tanyakan apa saja, atau tempel URL gambar untuk analisis vision.</div>
+        </div>
+        <form id="chat-form" class="row">
+          <input id="chat-input" class="input grow" placeholder="Tulis pesan… cth: Jelaskan Rick and Morty secara detail" autocomplete="off" />
+          <button class="btn btn-dark" type="submit" id="btn-send">Kirim</button>
+        </form>
+        <div class="hint mono small">puter.ai.chat("What is life?", { model: "gpt-5.6-luna" })</div>
+      </article>
+
+      <!-- IMAGE -->
+      <article class="card panel" id="panel-image">
+        <div class="panel-head"><div><h2>Text to Image</h2><p class="muted small">Generate gambar dari teks. Mode uji = gratis, tanpa memotong kredit.</p></div>
+        <label class="check"><input type="checkbox" id="img-test" checked /> testMode</label></div>
+        <form id="img-form" class="row">
+          <input id="img-prompt" class="input grow" value="Foto kucing oranye di atas sofa linen, cahaya pagi, minimalis" />
+          <button class="btn btn-dark" type="submit">Generate</button>
+        </form>
+        <div id="img-out" class="img-out muted small">Belum ada gambar. Hasil akan muncul di sini.</div>
+        <div class="hint mono small">puter.ai.txt2img('A picture of a cat.', true)</div>
+      </article>
+
+      <!-- FS -->
+      <article class="card panel" id="panel-fs">
+        <div class="panel-head"><div><h2>Cloud Storage</h2><p class="muted small">Tulis, baca, dan list file langsung dari browser.</p></div>
+        <button class="btn btn-light btn-sm" id="btn-fs-refresh">Muat ulang</button></div>
+        <form id="fs-form" class="row">
+          <input id="fs-name" class="input" value="hello.txt" aria-label="Nama file" />
+          <input id="fs-content" class="input grow" value="Hello, world!" aria-label="Isi file" />
+          <button class="btn btn-dark" type="submit">Tulis</button>
+        </form>
+        <div class="grid-2">
+          <div>
+            <div class="label">Daftar file (root)</div>
+            <ul id="fs-list" class="file-list"><li class="muted small">Memuat…</li></ul>
+          </div>
+          <div>
+            <div class="label">Isi file</div>
+            <pre id="fs-read" class="output mono">Klik sebuah file untuk membaca isinya.</pre>
+          </div>
+        </div>
+        <div class="hint mono small">puter.fs.write('hello.txt', 'Hello, world!') · puter.fs.read(name) · puter.fs.readdir('/')</div>
+      </article>
+
+      <!-- KV -->
+      <article class="card panel" id="panel-kv">
+        <div class="panel-head"><div><h2>NoSQL Key-Value</h2><p class="muted small">Simpan preferensi & state user per-akun.</p></div>
+        <button class="btn btn-light btn-sm" id="btn-kv-list">List keys</button></div>
+        <form id="kv-form" class="row">
+          <input id="kv-key" class="input" value="userPreference" />
+          <input id="kv-val" class="input grow" value="darkMode" />
+          <button class="btn btn-dark" type="submit">Set</button>
+          <button class="btn btn-light" type="button" id="btn-kv-get">Get</button>
+          <button class="btn btn-light" type="button" id="btn-kv-del">Del</button>
+        </form>
+        <pre id="kv-out" class="output mono">puter.kv.set('userPreference', 'darkMode')</pre>
+      </article>
+
+      <!-- HOSTING -->
+      <article class="card panel" id="panel-hosting">
+        <div class="panel-head"><div><h2>Hosting</h2><p class="muted small">Publish folder menjadi website statis berekstensi .puter.site.</p></div></div>
+        <form id="host-form" class="row">
+          <input id="host-html" class="input grow" value="<h1>Hello, world!</h1><p>Dihosting dari Puter.js</p>" />
+          <button class="btn btn-dark" type="submit">Publish</button>
+        </form>
+        <pre id="host-out" class="output mono">Belum dipublish.</pre>
+        <div class="hint mono small">puter.fs.mkdir(dir) → puter.fs.write(dir/index.html) → puter.hosting.create(subdomain, dir)</div>
+      </article>
+
+      <!-- NET -->
+      <article class="card panel" id="panel-net">
+        <div class="panel-head"><div><h2>Networking</h2><p class="muted small">Fetch tanpa hambatan CORS via edge Puter.</p></div></div>
+        <form id="net-form" class="row">
+          <input id="net-url" class="input grow" value="https://example.com" />
+          <button class="btn btn-dark" type="submit">Fetch</button>
+        </form>
+        <pre id="net-out" class="output mono">Respons akan tampil di sini.</pre>
+        <div class="hint mono small">puter.net.fetch("https://example.com")</div>
+      </article>
+    </section>
+  </div>
+
+  <footer class="muted small footer">
+    Dibangun dengan <span class="mono">https://js.puter.com/v2/</span> · Privasi: Puter tidak memakai tracker dan tidak memonetisasi data pribadi. · Lihat <a href="https://docs.puter.com/llms.txt">llms.txt</a> untuk referensi AI.
+  </footer>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="./app.js"></script>
+</body>
+</html>
